@@ -1,0 +1,43 @@
+  --思路--
+  可以套用区间dp的模板，最外侧for循环是区间长度，第二层区间起点，第三层是遍历两个小区间的分界点合并成大区间。
+  问题就出在合并大区间的状态方程搞不对，
+  思路是假设通过小区间(i,k)和(k,j)合并成一个大的开区间(i,j)，那么k就是区间分界点，要遍历取最大的那个分界点。
+  所以k是最终剩下的元素，那么戳(i,j)的值就是，戳完(i,k)和戳完(k,j)的得分+现在剩下的k元素和两个区间边界的乘积：
+  dp[i][j] = max(dp[i][k]+dp[k][j]+val[i]*val[k]+val[j]), i<k<j
+  
+  --代码--
+  public int maxCoins(int[] nums) {
+        int[][] dp = new int[nums.length+2][nums.length+2];
+        int[] val = new int[nums.length+2];
+        for (int i = 0; i < val.length; i++) {
+            if (i==0||i==val.length-1){
+                val[i]=1;
+            }else {
+                val[i]=nums[i-1];
+            }
+        }
+        for (int i = 1; i < nums.length+2; i++) {
+            for (int j = 0; j < dp.length; j++) {
+                int start = j;
+                int end = start+i;
+                if (end<dp.length) {
+                    if (i==1){
+                        dp[start][end] = 0;
+                    }else if (i==2){
+                        if (start==0){
+                            dp[start][end] = val[1]*val[2];
+                        }else if (end==dp.length-1){
+                            dp[start][end] = val[val.length-3]*val[val.length-2];
+                        }else {
+                            dp[start][end] = nums[start-1]*nums[start]*nums[start+1];
+                        }
+                    }else {
+                        for (int k = start + 1; k < end; k++) {
+                            dp[start][end] = Math.max(dp[start][end], dp[start][k] + val[start]*val[k]*val[end] + dp[k][end]);
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][dp.length-1];
+    }
