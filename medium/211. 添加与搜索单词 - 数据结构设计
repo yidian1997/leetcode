@@ -1,0 +1,88 @@
+  --思路--
+  一开始采用的hashset的做法导致每次query的时候都会遍历整个set，复杂度过高。
+  所以需要利用trie树去存单词，由于单词里面没有“.”，只有query会有，所以直接存就好。
+  由于只可能出现26个小写字符，trie树成员变量只需要new一个26长度的数组分别对应a-z，然后还需要一个boolean记录这个节点是否是单词结尾。
+  查询由于有“.”的存在，当当前位置是“.”的时候，需要遍历数组中所有非null的trie node，只要有一个符合query就返回true，反之false。
+  当当前位置是字符时，数组对应index如果不是null，则说明存在可以继续查找，反之返回false。
+  
+  需要注意的是当index=query.length-1的时候要特殊处理，判断trie节点是否是单词结尾，不是的话这个query也不算找到。
+  对于“.”的情况，数组只要存在任意一个不是null且是单词结尾的节点即可返回true。
+  
+  --代码--
+  class WordDictionary {
+      Trie trie;
+
+      public WordDictionary() {
+          trie = new Trie(false);
+      }
+
+      public void addWord(String word) {
+          trie.add(word);
+      }
+
+      public boolean search(String word) {
+          Trie root = trie;
+          return shelper(word,0,root);
+      }
+
+      public boolean shelper(String word,int idx,Trie root){
+          if (idx==word.length()) return false;
+          if (root!=null) {
+              char c = word.charAt(idx);
+              if (c == '.') {
+                  boolean res = false;
+                  for (Trie node : root.child) {
+                      if (idx==word.length()-1){
+                          if (node!=null&&node.isWord){
+                              res = true;
+                              break;
+                          }
+                      }
+                      boolean tmp = false;
+                      if (node != null) {
+                          tmp = shelper(word, idx + 1, node);
+                      }
+                      if (tmp) {
+                          res = tmp;
+                          break;
+                      }
+                  }
+                  return res;
+              } else {
+                  int i = c - 'a';
+                  if (idx==word.length()-1){
+                      if (root.child[i]!=null&&root.child[i].isWord){
+                          return true;
+                      }
+                  }
+                  return shelper(word, idx+1, root.child[i]);
+              }
+          }else {
+              return false;
+          }
+      }
+  }
+
+  class Trie{
+      Trie[] child;
+      boolean isWord;
+
+      Trie(boolean isWord){
+          child = new Trie[26];
+          this.isWord = isWord;
+      }
+
+      public void add(String word){
+          Trie root = this;
+          for (int i = 0; i < word.length(); i++) {
+              char c = word.charAt(i);
+              int idx = c - 'a';
+              if (root.child[idx]==null){
+                  Trie node = new Trie(false);
+                  root.child[idx] = node;
+              }
+              root = root.child[idx];
+          }
+          root.isWord = true;
+      }
+  }
