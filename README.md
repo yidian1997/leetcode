@@ -1,2 +1,2 @@
 # leetcode
-record my Leecode
+record my Leetcode
