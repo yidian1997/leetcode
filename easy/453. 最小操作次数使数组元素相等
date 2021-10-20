@@ -1,0 +1,19 @@
+  --思路--
+  正着模拟比较麻烦，又要判断又要增加值。
+  突发奇想，反着来，让n-1个数+1，应该是要贪心做法，即让最小的n-1个数+1，等效于：
+  每次让最大的数-1，所以思路就是遍历一遍求最小值，然后计算每一项和最小值的差值并求和。
+  
+  --代码--
+  public int minMoves(int[] nums) {
+      int min = Integer.MAX_VALUE;
+      for (int i = 0; i < nums.length; i++) {
+          if (nums[i]<min){
+              min = nums[i];
+          }
+      }
+      int res = 0;
+      for (int i = 0; i < nums.length; i++) {
+          res+= nums[i]-min;
+      }
+      return res;
+  }
