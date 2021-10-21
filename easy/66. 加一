@@ -1,0 +1,32 @@
+  --思路--
+  两种情况，一种是需要进位，while循环不断计算新的进位carry，如果是1且index大于等于0，则继续循环
+  如果carry=0了，说明不需要继续进位了，输出digit
+  如果index已经小于0，并且carry=1，说明最高位也要进位，得补个1，新建一个长的数组copy过去。
+  
+  --代码--
+  public int[] plusOne(int[] digits) {
+      int low = digits[digits.length-1]+1;
+      if (low==10){
+          int carry = low/10;
+          int idx = digits.length-2;
+          digits[digits.length-1] = 0;
+          while (carry==1&&idx>=0){
+              low = digits[idx]+carry;
+              carry = low/10;
+              digits[idx] = low%10;
+              idx--;
+          }
+          if (carry==1){
+              int[] res = new int[digits.length+1];
+              System.arraycopy(digits,0,res,1,digits.length);
+              res[0] = 1;
+              return res;
+          }else {
+              return digits;
+          }
+      }else {
+          digits[digits.length-1] = low;
+          return digits;
+      }
+  }
+  
