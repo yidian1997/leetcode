@@ -1,0 +1,79 @@
+  --思路--
+  要找到所有的解，那必然要遍历了，不能dp（我认为）
+  每一个括号都有两个选择，要么留要么舍，字母直接留。
+  如果直接开始穷举会复杂度比较高，可以根据性质剪枝（什么时候必留，什么时候必删）。
+  首先遍历一遍字符串，统计最后最少要删多少左括号和右括号，一开始两个count都是0：
+  如果遍历到“（”，则leftcount++
+  如果遍历到“）”，则分类讨论，如果现在左边有未配对左括号（即leftcount>0），则leftcount--（表示抵消），否则说明这个右括号没有对应的左括号与之匹配所以要删除，rightcount++。
+  
+  然后是dfs部分：
+  分类讨论：
+  1）如果当前括号是“（”
+    a. 先尝试保留，builder要add这个左括号。
+    b. 如果当前可删除左括号的count>0，则尝试删除（即不往builder中add，直接递归调用），否则不尝试删除。
+  2）如果当前括号是“）”
+    a. 判断现在左边有没有未匹配括号，如果有则builder进行add，否则就尝试删除，删除之前判断可删除的右括号count是否>0，如果是再删除进行递归。
+    b. 左边已经没有未匹配的括号，则直接进入判断删除流程。
+  3）如果是字母
+    a. 直接builder进行add然后递归。
+  
+  --代码--
+  public List<String> removeInvalidParentheses(String s) {
+      int leftCount = 0;
+      int rightCount = 0;
+      for (int i = 0; i < s.length(); i++) {
+          char c = s.charAt(i);
+          if (c==')') {
+              if (leftCount == 0) {
+                  rightCount++;
+              } else {
+                  leftCount--;
+              }
+          }else if (c=='('){
+              leftCount++;
+          }
+      }
+      StringBuilder builder = new StringBuilder();
+      Set<String> set = new HashSet<>();
+      List<String> res = new ArrayList<>();
+      dfs(s,leftCount,rightCount,0,set,builder,0,0);
+      for (String ste:set){
+          res.add(ste);
+      }
+      return res;
+  }
+
+  public void dfs(String s, int leftDel, int rigthDel, int idx, Set<String> map,StringBuilder builder,int lc,int rc){
+      if (idx==s.length()){
+          if (lc==rc) {
+              map.add(builder.toString());
+          }
+          return;
+      }
+      if (idx<s.length()){
+          char c = s.charAt(idx);
+          if (c=='('){
+              builder.append(c);
+              dfs(s,leftDel,rigthDel,idx+1,map,builder,lc+1,rc);
+              builder.delete(builder.length()-1,builder.length());
+              if (leftDel>0){
+                  dfs(s,leftDel-1,rigthDel,idx+1,map,builder,lc,rc);
+              }
+          }else if (c==')'){
+              if (lc-rc>0){
+                  builder.append(c);
+                  dfs(s,leftDel,rigthDel,idx+1,map,builder,lc,rc+1);
+                  builder.delete(builder.length()-1,builder.length());
+                  if (rigthDel>0){
+                      dfs(s,leftDel,rigthDel-1,idx+1,map,builder,lc,rc);
+                  }
+              }else {
+                  dfs(s,leftDel,rigthDel-1,idx+1,map,builder,lc,rc);
+              }
+          }else {
+              builder.append(c);
+              dfs(s,leftDel,rigthDel,idx+1,map,builder,lc,rc);
+              builder.delete(builder.length()-1,builder.length());
+          }
+      }
+  }
