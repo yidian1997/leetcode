@@ -1,0 +1,51 @@
+  --思路--
+  我只能想到map，但是这样空间复杂度是O(n)
+  只能摩尔投票法，两个变量表示候选数字first，second，还有两个记候选人票数的变量fc，sc
+  然后遍历数组
+  1）如果当前数字等于某一个候选人，则某一个候选人票数++
+  2）如果都不相等
+    a. 如果某个候选人已经无票，则替换成当前数字，票数置为1
+    b. 若两个候选人都还有票，则当前两个候选人票数都--
+  
+  最后再遍历一遍判断这两个候选人是否超过n/3，然后加入结果list
+  
+  
+  --代码--
+  public List<Integer> majorityElement(int[] nums) {
+      int first = Integer.MAX_VALUE;
+      int second = Integer.MAX_VALUE;
+      int fc = 0;
+      int sc = 0;
+      for (int i = 0; i < nums.length; i++) {
+          if (nums[i]==first){
+              fc++;
+          }else if (nums[i]==second){
+              sc++;
+          }else {
+              if (fc==0){
+                  first = nums[i];
+                  fc++;
+              }else if (sc==0){
+                  second = nums[i];
+                  sc++;
+              }else if (fc>0){
+                  fc--;
+                  sc--;
+              }
+          }
+      }
+      fc = 0;
+      sc = 0;
+      for (int i = 0; i < nums.length; i++) {
+          if (nums[i]==first){
+              fc++;
+          }
+          if (nums[i]==second){
+              sc++;
+          }
+      }
+      List<Integer> res = new ArrayList<>();
+      if (fc>nums.length/3) res.add(first);
+      if (sc>nums.length/3) res.add(second);
+      return res;
+  }
