@@ -1,0 +1,52 @@
+  --思路--
+  我用二分，题解暴力（直接从sqrt(area)到1遍历w），我gg，我慢的一批。
+  
+  说说二分思路：
+  1）如果mid可以整除area，那么判断mid是否大于area/mid，如果是则是一个解，判断并保存，接下来让缩小范围去找可能的最优（缩小右边界），否则缩小左边界。
+  2）不能整除的情况比较恶心，不能直接--右边界或++左边界，会漏解，需要先判断左右边界是不是可行解，在通过--或++缩小范围。
+  
+  --代码--
+  public int[] constructRectangle(int area) {
+      int left = 1;
+      int right = area;
+      int mid = left+(right-left)/2;
+      int res = Integer.MAX_VALUE;
+      while (left<right){
+          if (area%mid==0){
+              int w = area/mid;
+              if (mid>=w){
+                  right = mid;
+                  if (mid<res){
+                      res = mid;
+                  }
+              }else {
+                  left = mid+1;
+              }
+          }else {
+              if (area%left==0){
+                  int w = area/left;
+                  if (left>=w) {
+                      if (left < res) {
+                          res = left;
+                      }
+                  }
+                  left++;
+              }else if (area%right==0){
+                  int w = area/right;
+                  if (right>=w) {
+                      if (right < res) {
+                          res = right;
+                      }
+                  }
+                  right--;
+              }else {
+                  right--;
+              }
+          }
+          mid = left+(right-left)/2;
+      }
+      int[] arr = new int[2];
+      arr[0] = res==Integer.MAX_VALUE?area:res;
+      arr[1] = area/arr[0];
+      return arr;
+  }
