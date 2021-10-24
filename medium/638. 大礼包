@@ -1,0 +1,59 @@
+  --思路--
+  首先筛选一下套餐，有些不值的套餐（比不用套餐还贵的），就删除掉。
+  
+  然后开始dfs，for循环遍历套餐，进行全排列，选择摸个套餐之后需要修改needs，并判断这个套餐能不能用（不能超买），
+  如果能用则计算一下金额，然后递归
+  回溯的时候要把，needs再回复回去，然后剩余部分单买不用套餐的金额，判断并更新最终输出变量
+  
+  --代码--
+  int res = Integer.MAX_VALUE;
+  boolean isV = true;
+  boolean isF = false;
+  public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+      List<List<Integer>> valids = new ArrayList<>();
+      for (int i = 0; i < special.size(); i++) {
+          List<Integer> sp = special.get(i);
+          int sum = 0;
+          for (int j = 0; j < sp.size()-1; j++) {
+              sum+=sp.get(j)*price.get(j);
+          }
+          if (sum>sp.get(sp.size()-1)){
+              valids.add(sp);
+          }
+      }
+      dfs(price,valids,needs,0,0);
+      int tmp = 0;
+      if (!isF){
+          for (int i = 0; i < needs.size(); i++) {
+              tmp+=needs.get(i)*price.get(i);
+          }
+      }
+      return isF?res:tmp;
+  }
+
+  public void dfs(List<Integer> price, List<List<Integer>> valids, List<Integer> needs,int sum,int start){
+      for (int i = start; i < valids.size(); i++) {
+          List<Integer> comp = valids.get(i);
+          for (int j = 0; j < needs.size(); j++) {
+              int tmp = needs.get(j)-comp.get(j);
+              if (tmp<0){
+                  isV = false;
+              }
+              needs.set(j,tmp);
+          }
+          if (isV) {
+              dfs(price, valids, needs, sum + comp.get(comp.size() - 1), start);
+          }
+          int tmp_sum = sum;
+          for (int j = 0; j < needs.size(); j++) {
+              int tmp = needs.get(j)+comp.get(j);
+              needs.set(j,tmp);
+              tmp_sum+=tmp*price.get(j);
+          }
+          isV = true;
+          if (tmp_sum<res){
+              isF = true;
+              res = tmp_sum;
+          }
+      }
+  }
