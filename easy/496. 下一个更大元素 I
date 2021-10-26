@@ -1,0 +1,35 @@
+  --思路--
+  应该用栈来缓存没有找到对应关系的数，一旦出发nums2[i]<nums2[i+1]条件，就要遍历栈中小于nums2[i+1]的元素，大于的不出栈。
+  (之前直接用list存，全输出了是不对的，因为栈中并不一定都小于nums2[i+1])
+  然后用map保存对应关系。
+  
+  --代码--
+  public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+      Stack<Integer> cache = new Stack<>();
+      Map<Integer,Integer> map = new HashMap<>();
+      for (int i = 0; i < nums2.length-1; i++) {
+          int n = nums2[i];
+          if (n<nums2[i+1]){
+              if (cache.size()==0) {
+                  map.put(n, nums2[i + 1]);
+              }else {
+                  while (!cache.isEmpty()&&cache.peek()<nums2[i+1]) {
+                      map.put(cache.pop(),nums2[i+1]);
+                  }
+                  map.put(n, nums2[i + 1]);
+                  cache.clear();
+              }
+          }else {
+              cache.add(n);
+          }
+      }
+      map.put(nums2[nums2.length-1],-1);
+      for (int i = 0; i < cache.size(); i++) {
+          map.put(cache.get(i),-1);
+      }
+      int[] res = new int[nums1.length];
+      for (int i = 0; i < nums1.length; i++) {
+          res[i] = map.get(nums1[i]);
+      }
+      return res;
+  }
