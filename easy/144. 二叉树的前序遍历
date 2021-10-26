@@ -1,0 +1,24 @@
+  --思路--
+  这个感觉和中序遍历不一样，因为栈是先进后出，所以右节点先进。
+  由于根节点先出栈了，所以就不需要切断根节点和左右孩子的指针了。
+  
+  --代码--
+  public List<Integer> preorderTraversal(TreeNode root) {
+      if(root==null) return new ArrayList<>();
+      Stack<TreeNode> stack = new Stack<>();
+      List<Integer> res = new ArrayList<>();
+      stack.add(root);
+      while(!stack.isEmpty()){
+          TreeNode node = stack.pop();
+          res.add(node.val);
+          if(node.right!=null){
+              stack.add(node.right);
+              // node.right = null;
+          }
+          if(node.left!=null){
+              stack.add(node.left);
+              // node.left = null;
+          }
+      }
+      return res;
+  }
