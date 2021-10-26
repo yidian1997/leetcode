@@ -1,0 +1,26 @@
+  --思路--
+  非递归，用stack
+  需要一个while循环以!stack.isEmpty()作为条件来遍历。
+  遍历过程需要优先左子节点入栈，入栈之后切断当前root和left的指针，防止重复遍历。
+  
+  --代码--
+  public List<Integer> inorderTraversal(TreeNode root) {
+      if(root==null) return new ArrayList<>();
+      Stack<TreeNode> stack = new Stack<>();
+      List<Integer> res = new ArrayList<>();
+      stack.add(root);
+      while(!stack.isEmpty()){
+          TreeNode node = stack.peek();
+          if(node.left!=null){
+              stack.add(node.left);
+              node.left = null;
+          }else{
+              res.add(node.val);
+              stack.pop();
+              if(node.right!=null){
+                  stack.add(node.right);
+              }
+          }
+      }
+      return res;
+  }
