@@ -1,0 +1,77 @@
+  --思路--
+  front位置就是真的存值了，rear是前一个位置存，本身不存。
+  核心就是判空front==rear，判满(rear+1)%arr.length==front
+  插入前记得判满
+  取值和出队前记得判空
+  
+  --代码--
+  class MyCircularDeque {
+      int[] arr;
+      int front = 0;
+      int rear = 0;
+
+      public MyCircularDeque(int k) {
+          arr = new int[k+1];
+      }
+
+      public boolean insertFront(int value) {
+          if (!isFull()) {
+              front--;
+              front = (front + arr.length) % arr.length;
+              arr[front] = value;
+              return true;
+          }
+          return false;
+      }
+
+      public boolean insertLast(int value) {
+          if (!isFull()){
+              arr[rear] = value;
+              rear++;
+              rear%=arr.length;
+              return true;
+          }
+          return false;
+      }
+
+      public boolean deleteFront() {
+          if (!isEmpty()){
+              front++;
+              front%=arr.length;
+              return true;
+          }
+          return false;
+      }
+
+      public boolean deleteLast() {
+          if (!isEmpty()){
+              rear--;
+              rear = (rear+arr.length)%arr.length;
+              return true;
+          }
+          return false;
+      }
+
+      public int getFront() {
+          if (!isEmpty()) {
+              return arr[front];
+          }
+          return -1;
+      }
+
+      public int getRear() {
+          if (!isEmpty()) {
+              return arr[(rear - 1 + arr.length) % arr.length];
+          }else {
+              return -1;
+          }
+      }
+
+      public boolean isEmpty() {
+          return front==rear;
+      }
+
+      public boolean isFull() {
+          return (rear+1)%arr.length==front;
+      }
+  }
